@@ -1,39 +1,42 @@
-const server = require("express")();
-const line = require("@line/bot-sdk");
+const LINE_CHANNEL_ACCESS_TOKEN = 'U0l6MKguAZVZIzfdkPHkdiPnp/kUoNzCNMp228I9CB4u3UZN8e55SjtasTJr1w0KuVlgMkuEwj1vfPavFop9aGcAgdntr7jh0hx9o9X+lxgzR+aI1RUTvUYjgpWZGnewCWWeVZ9EPUCNavdHKp2srQdB04t89/1O/w1cDnyilFU='; 
 
-const line_config = {
-    channelAccessToken: process.env.LINE_ACCESS_TOKEN,
-channelSecret: process.env.LINE_CHANNEL_SECRET
-};
+var express = require('express');
+var bodyParser = require('body-parser');
+var request = require('request');
+var app = express();
 
-server.listen(process.env.PORT || 3000);
+app.use(bodyParser.json());
 
-const bot = new line.Client(line_config);
 
-server.post('/webhook', line.middleware(line_config), (req, res, next) => {
-res.sendStatus(200);
-
-let events_processed = [];
-
- req.body.events.forEach((event) => {
-
-        if (event.type == "message" && event.message.type == "text"){
-           
-            if (event.message.text == "Ç±ÇÒÇ…ÇøÇÕ"){
-                
-                events_processed.push(bot.replyMessage(event.replyToken, {
-                    type: "text",
-                    text: "Ç±ÇÍÇÕÇ±ÇÍÇÕ"
-                }));
-            }
-        }
-    });
-
-    Promise.all(events_processed).then(
-        (response) => {
-            console.log(`${response.length} event(s) processed.`);
-        }
-    );
+var port = (process.env.PORT || 3000);
+var server = app.listen(port, function() {
+    console.log('Node is running on port ' + port);
 });
 
 
+app.post('/webhook', function(req, res, next){
+    res.status(200).end();
+    for (var event of req.body.events){
+        if (event.type == 'message' && event.message.text == 'ÉnÉçÅ['){
+            var headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + LINE_CHANNEL_ACCESS_TOKEN
+            }
+            var body = {
+                replyToken: event.replyToken,
+                messages: [{
+                    type: 'text',
+                    text: 'Ç±ÇÒÇ…ÇøÇÕÅ['
+                }]
+            }
+            var url = 'https://api.line.me/v2/bot/message/reply';
+            request({
+                url: url,
+                method: 'POST',
+                headers: headers,
+                body: body,
+                json: true
+            });
+        }
+    }
+});
