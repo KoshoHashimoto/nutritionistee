@@ -1,0 +1,6 @@
+machine api.heroku.com
+  login clover71484.msh@gmail.com
+  password a9b943ee-d9cc-415b-b7d3-a2d7403681e5
+machine git.heroku.com
+  login clover71484.msh@gmail.com
+  password a9b943ee-d9cc-415b-b7d3-a2d7403681e5
