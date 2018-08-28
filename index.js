@@ -1,6 +1,3 @@
-const LINE_CHANNEL_ACCESS_TOKEN = 'h6q3KVIwGb8XULyKnh/MoRedLHZvuQkmUZMI1k0FshhriZLMLhjZM1OQAuj4ZZ81uVlgMkuEwj1vfPavFop9aGcAgdntr7jh0hx9o9X+lxjBFuIlom7d5JKlXHOnJ/3AG69goXt87/wxrhN1VkmmKgdB04t89/1O/w1cDnyilFU='; 
-
-
 const server = require("express")();
 const line = require("@line/bot-sdk"); 
 
