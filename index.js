@@ -43,3 +43,18 @@ server.post('/webhook', line.middleware(line_config), (req, res, next) => {
         }
     );
 });
+
+app.post('/webhook', function(req, res, next){
+    res.status(200).end();
+    for (var event of req.body.events){
+        if (event.type == 'message' && event.message.text){
+            mecab.parse(event.message.text)
+            .then(
+                function(response){
+                    console.log(response);
+                }
+            );
+
+        }
+    }
+});
