@@ -1,4 +1,4 @@
-const LINE_CHANNEL_ACCESS_TOKEN = 'U0l6MKguAZVZIzfdkPHkdiPnp/kUoNzCNMp228I9CB4u3UZN8e55SjtasTJr1w0KuVlgMkuEwj1vfPavFop9aGcAgdntr7jh0hx9o9X+lxgzR+aI1RUTvUYjgpWZGnewCWWeVZ9EPUCNavdHKp2srQdB04t89/1O/w1cDnyilFU='; 
+const LINE_CHANNEL_ACCESS_TOKEN = 'h6q3KVIwGb8XULyKnh/MoRedLHZvuQkmUZMI1k0FshhriZLMLhjZM1OQAuj4ZZ81uVlgMkuEwj1vfPavFop9aGcAgdntr7jh0hx9o9X+lxjBFuIlom7d5JKlXHOnJ/3AG69goXt87/wxrhN1VkmmKgdB04t89/1O/w1cDnyilFU='; 
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -17,7 +17,7 @@ var server = app.listen(port, function() {
 app.post('/webhook', function(req, res, next){
     res.status(200).end();
     for (var event of req.body.events){
-        if (event.type == 'message' && event.message.text == 'ÉnÉçÅ['){
+        if (event.type == 'message' && event.message.text == '„Éè„É≠„Éº'){
             var headers = {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + LINE_CHANNEL_ACCESS_TOKEN
@@ -26,7 +26,7 @@ app.post('/webhook', function(req, res, next){
                 replyToken: event.replyToken,
                 messages: [{
                     type: 'text',
-                    text: 'Ç±ÇÒÇ…ÇøÇÕÅ['
+                    text: '„Åì„Çì„Å´„Å°„ÅØ„Éº'
                 }]
             }
             var url = 'https://api.line.me/v2/bot/message/reply';
