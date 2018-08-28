@@ -1,4 +1,5 @@
 const server = require("express")();
+const mecab = require('mecabaas-client');
 const line = require("@line/bot-sdk"); 
 
 
