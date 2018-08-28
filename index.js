@@ -1,6 +1,7 @@
 const server = require("express")();
 const mecab = require('mecabaas-client');
 const memory = require('memory-cache');
+const dietitian = require('./dietitian');
 const line = require("@line/bot-sdk"); 
 
 
@@ -13,37 +14,6 @@ const line_config = {
 server.listen(process.env.PORT || 3000);
 
 const bot = new line.Client(line_config);
-
-
-
-server.post('/webhook', line.middleware(line_config), (req, res, next) => {
-    res.sendStatus(200);
-
-    
-    let events_processed = [];
-
-    
-    req.body.events.forEach((event) => {
-        
-        if (event.type == "message" && event.message.type == "text"){
-            
-            if (event.message.text == "こんにちは"){
-                
-                events_processed.push(bot.replyMessage(event.replyToken, {
-                    type: "text",
-                    text: "これはこれは"
-                }));
-            }
-        }
-    });
-
-    
-    Promise.all(events_processed).then(
-        (response) => {
-            console.log(`${response.length} event(s) processed.`);
-        }
-    );
-});
 
 app.post('/webhook', function(req, res, next){
     res.status(200).end();
@@ -67,8 +37,36 @@ app.post('/webhook', function(req, res, next){
                     }
                 }
             ).then(
-                function(response){
-                    console.log(response);
+                function(responseList){
+                    var botMemory = {
+                        confirmedFoodList: [],
+                        toConfirmFoodList: [],
+                        confirmingFood: null
+                    }
+                    for (var nutritionList of responseList){
+                        if (nutritionList.length == 0){
+                            continue;
+                        } else if (nutritionList.length == 1){
+                            botMemory.confirmedFoodList.push(nutritionList[0]);
+                        } else if (nutritionList.length > 1){
+                            botMemory.toConfirmFoodList.push(nutritionList);
+                        }
+                    }
+
+                    if (botMemory.toConfirmFoodList.length == 0 && botMemory.confirmedFoodList.length > 0){
+                        console.log('Going to reply the total calorie.');
+
+                        dietitian.replyTotalCalorie(event.replyToken, botMemory.confirmedFoodList);
+
+                    } else if (botMemory.toConfirmFoodList.length > 0){
+                        console.log('Going to ask which food the user had');
+
+                        dietitian.askWhichFood(event.replyToken, botMemory.toConfirmFoodList[0]);
+
+                        botMemory.confirmingFood = botMemory.toConfirmFoodList[0];
+                        botMemory.toConfirmFoodList.splice(0, 1);
+                        memory.put(event.source.userId, botMemory);
+                    }
                 }
             );
         }
