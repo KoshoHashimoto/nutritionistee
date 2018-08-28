@@ -1,5 +1,6 @@
 const server = require("express")();
 const mecab = require('mecabaas-client');
+const shokuhin = require('shokuhin-db');
 const line = require("@line/bot-sdk"); 
 
 
