@@ -1,6 +1,5 @@
 const server = require("express")();
 const mecab = require('mecabaas-client');
-const shokuhin = require('shokuhin-db');
 const line = require("@line/bot-sdk"); 
 
 
@@ -43,19 +42,4 @@ server.post('/webhook', line.middleware(line_config), (req, res, next) => {
             console.log(`${response.length} event(s) processed.`);
         }
     );
-});
-
-app.post('/webhook', function(req, res, next){
-    res.status(200).end();
-    for (var event of req.body.events){
-        if (event.type == 'message' && event.message.text){
-            mecab.parse(event.message.text)
-            .then(
-                function(response){
-                    console.log(response);
-                }
-            );
-
-        }
-    }
 });
