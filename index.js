@@ -1,6 +1,9 @@
 // -----------------------------------------------------------------------------
 // モジュールのインポート
 const server = require("express")();
+const bodyParser = require('body-parser');
+const app = express();
+const request = require('request');
 const line = require("@line/bot-sdk"); // Messaging APIのSDKをインポート
 
 // -----------------------------------------------------------------------------
