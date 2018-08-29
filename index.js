@@ -1,74 +1,50 @@
+// -----------------------------------------------------------------------------
+// モジュールのインポート
 const server = require("express")();
-const mecab = require('mecabaas-client');
-const memory = require('memory-cache');
-const dietitian = require('./dietitian');
-const line = require("@line/bot-sdk"); 
+const line = require("@line/bot-sdk"); // Messaging APIのSDKをインポート
 
-
+// -----------------------------------------------------------------------------
+// パラメータ設定
 const line_config = {
-    channelAccessToken: process.env.LINE_ACCESS_TOKEN, 
-    channelSecret: process.env.LINE_CHANNEL_SECRET 
+    channelAccessToken: process.env.LINE_ACCESS_TOKEN, // 環境変数からアクセストークンをセットしています
+    channelSecret: process.env.LINE_CHANNEL_SECRET // 環境変数からChannel Secretをセットしています
 };
 
-
+// -----------------------------------------------------------------------------
+// Webサーバー設定
 server.listen(process.env.PORT || 3000);
 
+// APIコールのためのクライアントインスタンスを作成
 const bot = new line.Client(line_config);
 
-app.post('/webhook', function(req, res, next){
-    res.status(200).end();
-    for (var event of req.body.events){
-        if (event.type == 'message' && event.message.text){
-            mecab.parse(event.message.text)
-            .then(
-                function(response){
-                    var foodList = [];
-                    for (var elem of response){
-                        if (elem.length > 2 && elem[1] == '名詞'){
-                            foodList.push(elem);
-                        }
-                    }
-                    var gotAllNutrition = [];
-                    if (foodList.length > 0){
-                        for (var food of foodList){
-                            gotAllNutrition.push(shokuhin.getNutrition(food[0]));
-                        }
-                        return Promise.all(gotAllNutrition);
-                    }
-                }
-            ).then(
-                function(responseList){
-                    var botMemory = {
-                        confirmedFoodList: [],
-                        toConfirmFoodList: [],
-                        confirmingFood: null
-                    }
-                    for (var nutritionList of responseList){
-                        if (nutritionList.length == 0){
-                            continue;
-                        } else if (nutritionList.length == 1){
-                            botMemory.confirmedFoodList.push(nutritionList[0]);
-                        } else if (nutritionList.length > 1){
-                            botMemory.toConfirmFoodList.push(nutritionList);
-                        }
-                    }
+// -----------------------------------------------------------------------------
+// ルーター設定
+server.post('/webhook', line.middleware(line_config), (req, res, next) => {
+    // 先行してLINE側にステータスコード200でレスポンスする。
+    res.sendStatus(200);
 
-                    if (botMemory.toConfirmFoodList.length == 0 && botMemory.confirmedFoodList.length > 0){
-                        console.log('Going to reply the total calorie.');
+    // すべてのイベント処理のプロミスを格納する配列。
+    let events_processed = [];
 
-                        dietitian.replyTotalCalorie(event.replyToken, botMemory.confirmedFoodList);
-
-                    } else if (botMemory.toConfirmFoodList.length > 0){
-                        console.log('Going to ask which food the user had');
-
-                        dietitian.askWhichFood(event.replyToken, botMemory.toConfirmFoodList[0]);
-
-                        botMemory.confirmingFood = botMemory.toConfirmFoodList[0];
-                        botMemory.toConfirmFoodList.splice(0, 1);
-                        memory.put(event.source.userId, botMemory);
-                    }
-                }
-            );
+    // イベントオブジェクトを順次処理。
+    req.body.events.forEach((event) => {
+        // この処理の対象をイベントタイプがメッセージで、かつ、テキストタイプだった場合に限定。
+        if (event.type == "message" && event.message.type == "text"){
+            // ユーザーからのテキストメッセージが「こんにちは」だった場合のみ反応。
+            if (event.message.text == "こんにちは"){
+                // replyMessage()で返信し、そのプロミスをevents_processedに追加。
+                events_processed.push(bot.replyMessage(event.replyToken, {
+                    type: "text",
+                    text: "これはこれは"
+                }));
+            }
         }
-    }
+    });
+
+    // すべてのイベント処理が終了したら何個のイベントが処理されたか出力。
+    Promise.all(events_processed).then(
+        (response) => {
+            console.log(`${response.length} event(s) processed.`);
+        }
+    );
 });
