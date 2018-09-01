@@ -1,0 +1,27 @@
+{
+  "name": "mecabaas-client",
+  "version": "1.0.3",
+  "description": "Client library to access to mecabaas API.",
+  "main": "index.js",
+  "private": false,
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkjm/mecabaas-client.git"
+  },
+  "keywords": [
+    "mecab"
+  ],
+  "author": "Kazuki Nakajima",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nkjm/mecabaas-client/issues"
+  },
+  "homepage": "https://github.com/nkjm/mecabaas-client#readme",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "request": "^2.78.0"
+  }
+}
